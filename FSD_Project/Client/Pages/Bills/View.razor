@@ -1,0 +1,19 @@
+﻿@page "/bills/view/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3>View</h3>
+
+<FormComponent bill="bill" Disabled="true" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    Bill? bill = new Bill();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        bill = await
+        _client.GetFromJsonAsync<Bill>($"{Endpoints.BillsEndpoint}/{id}");
+    }
+}

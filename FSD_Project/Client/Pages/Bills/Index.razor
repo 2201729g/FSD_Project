@@ -1,0 +1,82 @@
+﻿@page "/bills/"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+
+
+
+<h3>Bills</h3>
+<br />
+
+<a href="/bills/create" class="btn btn-secondary">
+    <span class="oi oi-plus"></span>
+    Create New Bill
+</a>
+
+@if (Bills == null)
+{
+    <div class="alert alert-info">Loading Bills ...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Distance</th>
+                <th>Amount</th>
+				<th>License Number</th>
+				<th>Time</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bill in Bills)
+            {
+                <tr>
+                    <td>@bill.Distance</td>
+                    <td>@bill.Amount</td>
+                    <td>@bill.LicenseNo</td>
+                    <td>@bill.Time</td>
+                    <td>
+                        <a href="/bills/view/@bill.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/bills/edit/@bill.Id" class="btn btn-warning">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(()=>Delete(bill.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+	private List<Bill>? Bills;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Bills = await _client.GetFromJsonAsync<List<Bill>>($"{Endpoints.BillsEndpoint}");
+    }
+
+    async Task Delete(int billId)
+    {
+        if (Bills != null)
+        {
+            var bill = Bills.First(q => q.Id == billId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {bill.Time}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.BillsEndpoint}/{billId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+}

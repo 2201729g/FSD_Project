@@ -1,0 +1,82 @@
+﻿@page "/incidentreports/"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+
+
+
+<h3>Incidentreports</h3>
+<br />
+
+<a href="/IncidentReports/create" class="btn btn-secondary">
+    <span class="oi oi-plus"></span>
+    Create New IncidentReport
+</a>
+
+@if (Incidentreports == null)
+{
+    <div class="alert alert-info">Loading Incidentreports ...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Location</th>
+                <th>License Number</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var incidentreport in Incidentreports)
+            {
+                <tr>
+                    <td>@incidentreport.Name</td>
+                    <td>@incidentreport.PhoneNo</td>
+                    <td>@incidentreport.Location</td>
+                    <td>@incidentreport.LicenseNo</td>
+                    <td>
+                        <a href="/Incidentreports/view/@incidentreport.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/Incidentreports/edit/@incidentreport.Id" class="btn btn-warning">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(()=>Delete(incidentreport.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<IncidentReport>? Incidentreports;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Incidentreports = await _client.GetFromJsonAsync<List<IncidentReport>>($"{Endpoints.IncidentReportsEndpoint}");
+    }
+
+    async Task Delete(int incidentreportId)
+    {
+        if (Incidentreports != null)
+        {
+            var incidentreport = Incidentreports.First(q => q.Id == incidentreportId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {incidentreport.Name}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.IncidentReportsEndpoint}/{incidentreportId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+}

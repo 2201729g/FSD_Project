@@ -1,0 +1,54 @@
+﻿@using FSD_Project.Client.Components
+<h3>FormComponent</h3>
+
+<EditForm Model="@incidentReport" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <fieldset disabled="@Disabled" >
+
+        <div class="form-group">
+            <label>Name: </label>
+            <div>
+                <InputText @bind-Value="@incidentReport.Name" class="form-control" />
+                <ValidationMessage For="@(() => incidentReport.Name)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Phone Number: </label>
+            <div>
+                <InputNumber @bind-Value="@incidentReport.PhoneNo" class="form-control" />
+                <ValidationMessage For="@(() => incidentReport.PhoneNo)" />
+            </div>
+        </div>
+    <div class="form-group">
+        <label>Location: </label>
+        <div>
+            <InputText @bind-Value="@incidentReport.Location" class="form-control" />
+            <ValidationMessage For="@(() => incidentReport.Location)" />
+        </div>
+    </div
+    <div class="form-group">
+        <label>License Number: </label>
+        <div>
+            <InputText @bind-Value="@incidentReport.LicenseNo" class="form-control" />
+            <ValidationMessage For="@(() => incidentReport.LicenseNo)" />
+        </div>
+    </div>
+    </fieldset>
+    @if (!Disabled)
+    {
+        <button type="submit" class="btn btn-success btn-block">
+            @ButtonText
+        </button>
+    }
+    <BackToList Target="incidentReports" />
+</EditForm>
+
+@code {
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public IncidentReport? incidentReport { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+
+}

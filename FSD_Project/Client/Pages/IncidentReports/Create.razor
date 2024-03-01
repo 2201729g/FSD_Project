@@ -1,0 +1,22 @@
+﻿@page "/incidentReports/create"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+
+<h3 class="driverd-title">Create New IncidentReports</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Create IncidentReport" incidentReport="incidentReport" OnValidSubmit="@CreateIncidentReport" />
+
+
+@code {
+    IncidentReport incidentReport = new IncidentReport();
+
+    private async Task CreateIncidentReport()
+    {
+        await _client.PostAsJsonAsync(Endpoints.IncidentReportsEndpoint, incidentReport);
+        _navManager.NavigateTo("/incidentReports/");
+    }
+}

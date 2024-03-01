@@ -1,0 +1,22 @@
+﻿@page "/bills/create"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+
+<h3 class="driverd-title">Create New Bills</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Create Bill" bill="bill" OnValidSubmit="@CreateBill" />
+
+
+@code {
+    Bill bill = new Bill();
+
+    private async Task CreateBill()
+    {
+        await _client.PostAsJsonAsync(Endpoints.BillsEndpoint, bill);
+        _navManager.NavigateTo("/bills/");
+    }
+}

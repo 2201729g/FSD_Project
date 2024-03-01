@@ -1,0 +1,19 @@
+﻿@page "/incidentReports/view/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3>View</h3>
+
+<FormComponent incidentReport="incidentReport" Disabled="true" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    IncidentReport? incidentReport = new IncidentReport();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        incidentReport = await
+        _client.GetFromJsonAsync<IncidentReport>($"{Endpoints.IncidentReportsEndpoint}/{id}");
+    }
+}

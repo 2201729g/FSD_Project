@@ -1,0 +1,23 @@
+﻿@page "/incidentReports/edit/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3>Edit IncidentReport</h3>
+
+<FormComponent ButtonText="Update" OnValidSubmit="EditIncidentReport" incidentReport="incidentReport" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    IncidentReport? incidentReport = new IncidentReport();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        incidentReport = await _client.GetFromJsonAsync<IncidentReport>($"{Endpoints.IncidentReportsEndpoint}/{id}");
+    }
+    async Task EditIncidentReport()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.IncidentReportsEndpoint}/{id}", incidentReport);
+        _navManager.NavigateTo("/incidentReports/");
+    }
+}

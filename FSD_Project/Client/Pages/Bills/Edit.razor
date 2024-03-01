@@ -1,0 +1,23 @@
+﻿@page "/bills/edit/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3>Edit Bill</h3>
+
+<FormComponent ButtonText="Update" OnValidSubmit="EditBill" bill="bill" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    Bill? bill = new Bill();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        bill = await _client.GetFromJsonAsync<Bill>($"{Endpoints.BillsEndpoint}/{id}");
+    }
+    async Task EditBill()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.BillsEndpoint}/{id}", bill);
+        _navManager.NavigateTo("/bills/");
+    }
+}
